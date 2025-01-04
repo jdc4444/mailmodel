@@ -6,6 +6,12 @@ from datetime import datetime
 import time
 import warnings
 
+# Suppress specific warnings
+warnings.filterwarnings("ignore", category=UserWarning, message="missing ScriptRunContext")
+
+# Set bare mode
+st._is_running_with_streamlit = False
+
 ###############################################################################
 # 1. Load user-saved models only
 ###############################################################################
@@ -128,6 +134,32 @@ def create_public_gui():
                 return modified_text
         return None  # This should never be reached now
 
+    def calculate_text_height(text, min_height=150):
+        """Calculate appropriate text area height based on content"""
+        num_lines = len(text.split('\n'))
+        # Approximate height per line (in pixels) and add one extra line
+        height_per_line = 25
+        calculated_height = (num_lines + 1) * height_per_line
+        return min(max(calculated_height, min_height), 800)  # Cap between min_height and 800px
+
+    # Add CSS to make text areas full width and style error messages
+    st.markdown("""
+        <style>
+        .stTextArea textarea {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .stAlert {
+            background-color: #e6f3ff !important;
+            border-color: #b3d9ff !important;
+            color: #0066cc !important;
+        }
+        .stAlert > div {
+            color: #0066cc !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     # 1) Rewrite Email
     with tabs[0]:
         email_to_rewrite = st.text_area("Enter email to rewrite", height=200)
@@ -160,13 +192,12 @@ def create_public_gui():
                     for alias, model_responses in responses.items():
                         response_container = st.container()
                         with response_container:
+                            st.markdown("<div style='margin: 15px 0;'>", unsafe_allow_html=True)
                             for i, txt in enumerate(model_responses, 1):
-                                col1, col2 = st.columns([20, 1])
-                                with col1:
-                                    st.text_area("", value=txt, height=150, key=f"response_{alias}_{i}", label_visibility="collapsed")
-                                with col2:
-                                    st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)  # Add some spacing
-                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right;'>{alias}</div>", unsafe_allow_html=True)
+                                height = calculate_text_height(txt)
+                                st.text_area("", value=txt, height=height, key=f"response_{alias}_{i}", label_visibility="collapsed")
+                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right; margin-top: -5px;'>{alias}</div>", unsafe_allow_html=True)
+                            st.markdown("</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Error generating response: {e}")
 
@@ -202,13 +233,12 @@ def create_public_gui():
                     for alias, model_responses in responses.items():
                         response_container = st.container()
                         with response_container:
+                            st.markdown("<div style='margin: 15px 0;'>", unsafe_allow_html=True)
                             for i, txt in enumerate(model_responses, 1):
-                                col1, col2 = st.columns([20, 1])
-                                with col1:
-                                    st.text_area("", value=txt, height=150, key=f"response_{alias}_{i}", label_visibility="collapsed")
-                                with col2:
-                                    st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)  # Add some spacing
-                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right;'>{alias}</div>", unsafe_allow_html=True)
+                                height = calculate_text_height(txt)
+                                st.text_area("", value=txt, height=height, key=f"response_{alias}_{i}", label_visibility="collapsed")
+                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right; margin-top: -5px;'>{alias}</div>", unsafe_allow_html=True)
+                            st.markdown("</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Error generating response: {e}")
 
@@ -255,13 +285,12 @@ def create_public_gui():
                     for alias, model_responses in responses.items():
                         response_container = st.container()
                         with response_container:
+                            st.markdown("<div style='margin: 15px 0;'>", unsafe_allow_html=True)
                             for i, txt in enumerate(model_responses, 1):
-                                col1, col2 = st.columns([20, 1])
-                                with col1:
-                                    st.text_area("", value=txt, height=150, key=f"response_{alias}_{i}", label_visibility="collapsed")
-                                with col2:
-                                    st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)  # Add some spacing
-                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right;'>{alias}</div>", unsafe_allow_html=True)
+                                height = calculate_text_height(txt)
+                                st.text_area("", value=txt, height=height, key=f"response_{alias}_{i}", label_visibility="collapsed")
+                                st.markdown(f"<div style='font-size: 10px; color: #888; text-align: right; margin-top: -5px;'>{alias}</div>", unsafe_allow_html=True)
+                            st.markdown("</div>", unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Error generating response: {e}")
 
