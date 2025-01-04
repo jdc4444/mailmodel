@@ -6,12 +6,6 @@ from datetime import datetime
 import time
 import warnings
 
-# Suppress specific warnings
-warnings.filterwarnings("ignore", category=UserWarning, message="missing ScriptRunContext")
-
-# Set bare mode
-st._is_running_with_streamlit = False
-
 ###############################################################################
 # 1. Load user-saved models only
 ###############################################################################
